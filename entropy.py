@@ -1,4 +1,5 @@
 from math import log
+import operator
 
 def createDataSet():
 	dataSet=[[1,1,'yes'],
@@ -52,7 +53,34 @@ def bestSplit(dataSet):#寻找最好划分的特征
 			bestFeature=i
 	return bestFeature
 
+def mahorityCnt(classList):#形参应该是所有标签列表
+	classCount={}#存储每个类别出现的次数
+	for vote in classList:#考察每一个类别
+		if vote not in classCount.keys():
+			classCount[vote]=0
+		classCount[vote]+=1
+	sortedClassCount=sorted(classCount.items(),key=operator.itemgetter(1),reverse=True)
+	return sortedClassCount[0][0]
 
+def createTree(dataSet,labels):
+	classList=[example[-1] for example in dataSet]
+	if classList.count(classList[0])==len(classList):#都属于一个类，停止划分
+		return classList[0]
+	if len(dataSet[0])==1:#所有的标签都用过还是不能划分，就挑选出现次数最多的类型
+		return majorityCnt(classList)
+	bestFeat=bestSplit(dataSet)
+	bestFeatLabel=labels[bestFeat]
+
+	myTree={bestFeatLabel:{}}#
+	del(labels[bestFeat])
+	featValues=[example[bestFeat] for example in dataSet]
+	uniqueVals=set(featValues)#存储最好特征的所有值
+	for value in uniqueVals:
+		subLabels=labels[:]
+		myTree[bestFeatLabel][value]=createTree(splitDataSet(dataSet,bestFeat,value),subLabels)
+	return myTree
 
 myDat,labels=createDataSet()
-print(bestSplit(myDat))
+#print(bestSplit(myDat))
+myTree=createTree(myDat,labels)
+print(myTree)
