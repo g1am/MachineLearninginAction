@@ -24,6 +24,35 @@ def calcShannonEnt(dataSet):
 		shannonEnt-=prob*log(prob,2)#以2为底求对数
 	return shannonEnt
 
+def splitDataSet(dataSet,axis,value):#划分数据集，符合特征要求的，除了特征以外的所有信息都保存
+	retDataSet=[]
+	for featVec in dataSet:
+		if featVec[axis]==value:
+			reducedFeatVec=featVec[:axis]
+			reducedFeatVec.extend(featVec[axis+1:])
+			retDataSet.append(reducedFeatVec)
+	return retDataSet
+
+def bestSplit(dataSet):#寻找最好划分的特征
+	numFeatures=len(dataSet[0])-1#计算除去最后一个标签，有多少特征
+	baseEntropy=calcShannonEnt(dataSet)#计算原始的熵
+	bestInfoGain=0.0#记录最优熵
+	bestFeature=-1#记录最优划分的特征
+	for i in range(numFeatures):#考察每个特征
+		featList=[example[i] for example in dataSet]#第i个特征的所有值
+		uniqueVals=set(featList)#集合中的值互不相同
+		newEntropy=0.0
+		for value in uniqueVals:#考察这个特征的所有值
+			subDataSet=splitDataSet(dataSet,i,value)
+			prob=len(subDataSet)/float(len(dataSet))#
+			newEntropy+=prob*calcShannonEnt(subDataSet)
+		infoGain=baseEntropy-newEntropy
+		if(infoGain>bestInfoGain):
+			bestInfoGain=infoGain
+			bestFeature=i
+	return bestFeature
+
+
+
 myDat,labels=createDataSet()
-tt=calcShannonEnt(myDat)
-print(tt)
+print(bestSplit(myDat))
