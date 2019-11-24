@@ -63,7 +63,7 @@ def mahorityCnt(classList):#形参应该是所有标签列表
 	return sortedClassCount[0][0]
 
 def createTree(dataSet,labels):
-	classList=[example[-1] for example in dataSet]
+	classList=[example[-1] for example in dataSet]#所有标签
 	if classList.count(classList[0])==len(classList):#都属于一个类，停止划分
 		return classList[0]
 	if len(dataSet[0])==1:#所有的标签都用过还是不能划分，就挑选出现次数最多的类型
@@ -77,7 +77,7 @@ def createTree(dataSet,labels):
 	uniqueVals=set(featValues)#存储最好特征的所有值
 	for value in uniqueVals:
 		subLabels=labels[:]
-		myTree[bestFeatLabel][value]=createTree(splitDataSet(dataSet,bestFeat,value),subLabels)
+		myTree[bestFeatLabel][value]=createTree(splitDataSet(dataSet,bestFeat,value),subLabels)#递归
 	return myTree
 
 myDat,labels=createDataSet()
